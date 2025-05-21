@@ -1,0 +1,28 @@
+// Define groups and nodes
+title Serverless (Lambda, OpenAI interface - 2)
+styleMode watercolor
+EndUser [icon: users] 
+AWS Cloud [icon: aws] {
+  Application Launcher {
+    Lambda (lambdaOpenAIInterface) [icon: aws-lambda]
+    S3 [icon: aws-simple-storage-service]
+  }
+  OpenAI Invoker {
+    API gateway [icon: aws-api-gateway]
+    Lambda (lambdaOpenAIInvoke) [icon: aws-lambda]
+  }
+}
+External [icon: chatgpt] {
+  OpenAI [icon: openai]
+}
+
+// Define connections
+EndUser >  Lambda (lambdaOpenAIInterface) :(Step 1) https:lambda_url.com
+Lambda (lambdaOpenAIInterface)> S3 : (Step 2) boto3:s3_client.get_object(bucket_name,file_name)
+S3  > EndUser : (Step 3) return(html_ouput)
+EndUser > API gateway :(Step 4) locationId={location} 
+API gateway > Lambda (lambdaOpenAIInvoke) :(Step 5) locationId={location}
+Lambda (lambdaOpenAIInvoke) > OpenAI :(Step 6) openai.chat.completions.create()
+Lambda (lambdaOpenAIInvoke) < OpenAI : (Step 7) chat_response [color: green]
+API gateway < Lambda (lambdaOpenAIInvoke) :(Step 8) gpt_response[color: green]
+EndUser < API gateway : (Step 9) gpt_response[color: green]
